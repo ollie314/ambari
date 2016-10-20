@@ -63,7 +63,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 import javax.persistence.RollbackException;
 
@@ -3111,13 +3110,8 @@ public class AmbariManagementControllerImpl implements AmbariManagementControlle
         changedHosts, requestParameters, requestProperties,
         runSmokeTest, reconfigureClients);
 
-    Lock clusterWriteLock = cluster.getClusterGlobalLock().writeLock();
-    clusterWriteLock.lock();
-    try {
-      updateServiceStates(cluster, changedServices, changedComponents, changedHosts, ignoredHosts);
-    } finally {
-      clusterWriteLock.unlock();
-    }
+    updateServiceStates(cluster, changedServices, changedComponents, changedHosts, ignoredHosts);
+
     return requestStages;
   }
 
@@ -3783,18 +3777,49 @@ public class AmbariManagementControllerImpl implements AmbariManagementControlle
             + cluster.getClusterName() + ", service=" + service.getName());
   }
 
-
+  /**
+   * Filters hosts to only select healthy ones that are heartbeating.
+   * <p/>
+   * The host's {@link HostState} is used to determine if a host is healthy.
+   *
+   * @return a List of healthy hosts, or an empty List if none exist.
+   * @throws AmbariException
+   * @see {@link HostState#HEALTHY}
+   */
   @Override
-  public String getHealthyHost(Set<String> hostList) throws AmbariException {
-    String hostName = null;
+  public List<String> selectHealthyHosts(Set<String> hostList) throws AmbariException {
+    List<String> healthyHosts = new ArrayList();
+
     for (String candidateHostName : hostList) {
-      hostName = candidateHostName;
-      Host candidateHost = clusters.getHost(hostName);
+      Host candidateHost = clusters.getHost(candidateHostName);
       if (candidateHost.getState() == HostState.HEALTHY) {
-        break;
+        healthyHosts.add(candidateHostName);
       }
     }
-    return hostName;
+
+    return healthyHosts;
+  }
+
+  /**
+   * Chooses a healthy host from the list of candidate hosts randomly. If there
+   * are no healthy hosts, then this method will return {@code null}.
+   * <p/>
+   * The host's {@link HostState} is used to determine if a host is healthy.
+   *
+   * @return a random healthy host, or {@code null}.
+   * @throws AmbariException
+   * @see {@link HostState#HEALTHY}
+   */
+  @Override
+  public String getHealthyHost(Set<String> hostList) throws AmbariException {
+    List<String> healthyHosts = selectHealthyHosts(hostList);
+
+    if (!healthyHosts.isEmpty()) {
+      Collections.shuffle(healthyHosts);
+      return healthyHosts.get(0);
+    }
+
+    return null;
   }
 
   @Override
@@ -4711,11 +4736,6 @@ public class AmbariManagementControllerImpl implements AmbariManagementControlle
   }
 
   @Override
-  public ServiceFactory getServiceFactory() {
-    return serviceFactory;
-  }
-
-  @Override
   public ServiceComponentFactory getServiceComponentFactory() {
     return serviceComponentFactory;
   }
@@ -5166,13 +5186,15 @@ public class AmbariManagementControllerImpl implements AmbariManagementControlle
 
     StackInfo stackInfo = ambariMetaInfo.getStack(linkEntity.getStack().getStackName(), linkEntity.getStack().getStackVersion());
 
-    if (stackInfo == null)
+    if (stackInfo == null) {
       throw new StackAccessException("stackName=" + linkEntity.getStack().getStackName() + ", stackVersion=" + linkEntity.getStack().getStackVersion());
+    }
 
     ExtensionInfo extensionInfo = ambariMetaInfo.getExtension(linkEntity.getExtension().getExtensionName(), linkEntity.getExtension().getExtensionVersion());
 
-    if (extensionInfo == null)
+    if (extensionInfo == null) {
       throw new StackAccessException("extensionName=" + linkEntity.getExtension().getExtensionName() + ", extensionVersion=" + linkEntity.getExtension().getExtensionVersion());
+    }
 
     ExtensionHelper.validateDeleteLink(getClusters(), stackInfo, extensionInfo);
     ambariMetaInfo.getStackManager().unlinkStackAndExtension(stackInfo, extensionInfo);
@@ -5202,13 +5224,15 @@ public class AmbariManagementControllerImpl implements AmbariManagementControlle
 
     StackInfo stackInfo = ambariMetaInfo.getStack(request.getStackName(), request.getStackVersion());
 
-    if (stackInfo == null)
+    if (stackInfo == null) {
       throw new StackAccessException("stackName=" + request.getStackName() + ", stackVersion=" + request.getStackVersion());
+    }
 
     ExtensionInfo extensionInfo = ambariMetaInfo.getExtension(request.getExtensionName(), request.getExtensionVersion());
 
-    if (extensionInfo == null)
+    if (extensionInfo == null) {
       throw new StackAccessException("extensionName=" + request.getExtensionName() + ", extensionVersion=" + request.getExtensionVersion());
+    }
 
     ExtensionHelper.validateCreateLink(stackInfo, extensionInfo);
     ExtensionLinkEntity linkEntity = createExtensionLinkEntity(request);
@@ -5265,13 +5289,15 @@ public class AmbariManagementControllerImpl implements AmbariManagementControlle
   public void updateExtensionLink(ExtensionLinkEntity linkEntity) throws AmbariException {
     StackInfo stackInfo = ambariMetaInfo.getStack(linkEntity.getStack().getStackName(), linkEntity.getStack().getStackVersion());
 
-    if (stackInfo == null)
+    if (stackInfo == null) {
       throw new StackAccessException("stackName=" + linkEntity.getStack().getStackName() + ", stackVersion=" + linkEntity.getStack().getStackVersion());
+    }
 
     ExtensionInfo extensionInfo = ambariMetaInfo.getExtension(linkEntity.getExtension().getExtensionName(), linkEntity.getExtension().getExtensionVersion());
 
-    if (extensionInfo == null)
+    if (extensionInfo == null) {
       throw new StackAccessException("extensionName=" + linkEntity.getExtension().getExtensionName() + ", extensionVersion=" + linkEntity.getExtension().getExtensionVersion());
+    }
 
     ambariMetaInfo.getStackManager().linkStackToExtension(stackInfo, extensionInfo);
   }

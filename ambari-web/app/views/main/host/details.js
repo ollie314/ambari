@@ -46,19 +46,19 @@ App.MainHostDetailsView = Em.View.extend({
         {
           action: 'startAllComponents',
           liClass: this.get('controller.content.isNotHeartBeating') ? 'disabled' : 'enabled',
-          cssClass: 'icon-play',
+          cssClass: 'glyphicon glyphicon-play',
           label: this.t('hosts.host.details.startAllComponents')
         },
         {
           action: 'stopAllComponents',
           liClass: this.get('controller.content.isNotHeartBeating') ? 'disabled' : 'enabled',
-          cssClass: 'icon-stop',
+          cssClass: 'glyphicon glyphicon-stop',
           label: this.t('hosts.host.details.stopAllComponents')
         },
         {
           action: 'restartAllComponents',
           liClass: this.get('controller.content.isNotHeartBeating') ? 'disabled' : 'enabled',
-          cssClass: 'icon-repeat',
+          cssClass: 'glyphicon glyphicon-repeat',
           label: this.t('hosts.host.details.restartAllComponents')
         }
       ]);
@@ -67,7 +67,7 @@ App.MainHostDetailsView = Em.View.extend({
       result.push({
         action: 'setRackId',
         liClass: '',
-        cssClass: 'icon-gear',
+        cssClass: 'glyphicon glyphicon-cog',
         label: this.t('hosts.host.details.setRackId')
       });
       result.push({
@@ -82,10 +82,16 @@ App.MainHostDetailsView = Em.View.extend({
       result.push({
         action: 'deleteHost',
         liClass: '',
-        cssClass: 'icon-remove',
+        cssClass: 'glyphicon glyphicon-remove',
         label: this.t('hosts.host.details.deleteHost')
       });
     }
+    result.push({
+      action: 'checkHost',
+      liClass: '',
+      cssClass: 'glyphicon glyphicon-check',
+      label: this.t('host.host.details.checkHost')
+    });
     return result;
   }.property('controller.content', 'isActive', 'controller.content.isNotHeartBeating'),
 
