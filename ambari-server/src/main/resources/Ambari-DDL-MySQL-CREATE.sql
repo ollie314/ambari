@@ -356,6 +356,7 @@ CREATE TABLE stage (
   cluster_host_info LONGBLOB,
   command_params LONGBLOB,
   host_params LONGBLOB,
+  command_execution_type VARCHAR(32) NOT NULL DEFAULT 'STAGE',
   CONSTRAINT PK_stage PRIMARY KEY (stage_id, request_id),
   CONSTRAINT FK_stage_request_id FOREIGN KEY (request_id) REFERENCES request (request_id));
 
@@ -1122,11 +1123,6 @@ INSERT INTO adminresource (resource_id, resource_type_id) VALUES
 INSERT INTO adminprincipaltype (principal_type_id, principal_type_name) VALUES
   (1, 'USER'),
   (2, 'GROUP'),
-  (3, 'ALL.CLUSTER.ADMINISTRATOR'),
-  (4, 'ALL.CLUSTER.OPERATOR'),
-  (5, 'ALL.CLUSTER.USER'),
-  (6, 'ALL.SERVICE.ADMINISTRATOR'),
-  (7, 'ALL.SERVICE.OPERATOR'),
   (8, 'ROLE');
 
 INSERT INTO adminprincipal (principal_id, principal_type_id) VALUES

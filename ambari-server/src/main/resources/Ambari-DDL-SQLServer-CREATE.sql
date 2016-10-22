@@ -360,6 +360,7 @@ CREATE TABLE stage (
   cluster_host_info VARBINARY(MAX) NOT NULL,
   command_params VARBINARY(MAX),
   host_params VARBINARY(MAX),
+  command_execution_type VARCHAR(32) NOT NULL DEFAULT 'STAGE',
   CONSTRAINT PK_stage PRIMARY KEY CLUSTERED (stage_id, request_id),
   CONSTRAINT FK_stage_request_id FOREIGN KEY (request_id) REFERENCES request (request_id));
 
@@ -1139,11 +1140,6 @@ BEGIN TRANSACTION
   values
     (1, 'USER'),
     (2, 'GROUP'),
-    (3, 'ALL.CLUSTER.ADMINISTRATOR'),
-    (4, 'ALL.CLUSTER.OPERATOR'),
-    (5, 'ALL.CLUSTER.USER'),
-    (6, 'ALL.SERVICE.ADMINISTRATOR'),
-    (7, 'ALL.SERVICE.OPERATOR'),
     (8, 'ROLE');
 
   insert into adminprincipal (principal_id, principal_type_id)

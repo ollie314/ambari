@@ -345,6 +345,7 @@ CREATE TABLE stage (
   cluster_host_info IMAGE,
   command_params IMAGE,
   host_params IMAGE,
+  command_execution_type VARCHAR(32) NOT NULL DEFAULT 'STAGE',
   CONSTRAINT PK_stage PRIMARY KEY (stage_id, request_id),
   CONSTRAINT FK_stage_request_id FOREIGN KEY (request_id) REFERENCES request (request_id));
 
@@ -1114,16 +1115,6 @@ insert into adminprincipaltype (principal_type_id, principal_type_name)
   select 1, 'USER'
   union all
   select 2, 'GROUP'
-  union all
-  select 3, 'ALL.CLUSTER.ADMINISTRATOR'
-  union all
-  select 4, 'ALL.CLUSTER.OPERATOR'
-  union all
-  select 5, 'ALL.CLUSTER.USER'
-  union all
-  select 6, 'ALL.SERVICE.ADMINISTRATOR'
-  union all
-  select 7, 'ALL.SERVICE.OPERATOR'
   union all
   select 8, 'ROLE';
 
