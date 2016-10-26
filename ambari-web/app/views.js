@@ -21,6 +21,7 @@
 
 require('views/application');
 require('views/common/clock_view');
+require('views/common/checkbox_view');
 require('views/common/log_search_ui_link_view');
 require('views/common/log_file_search_view');
 require('views/common/log_tail_view');
@@ -47,6 +48,7 @@ require('views/common/modal_popups/config_validation/config_validation_failed_po
 require('views/common/modal_popups/config_validation/config_validation_popup');
 require('views/common/editable_list');
 require('views/common/host_progress_popup_body_view');
+require('views/common/radio_button_view');
 require('views/common/rolling_restart_view');
 require('views/common/select_custom_date_view');
 require('views/common/metric');
@@ -174,6 +176,14 @@ require('views/main/admin/highAvailability/nameNode/rollbackHA/step1_view');
 require('views/main/admin/highAvailability/nameNode/rollbackHA/step2_view');
 require('views/main/admin/highAvailability/nameNode/rollbackHA/step3_view');
 require('views/main/admin/highAvailability/nameNode/rollbackHA/rollback_wizard_view');
+require('views/main/admin/highAvailability/journalNode/wizard_view');
+require('views/main/admin/highAvailability/journalNode/progress_view');
+require('views/main/admin/highAvailability/journalNode/step1_view');
+require('views/main/admin/highAvailability/journalNode/step2_view');
+require('views/main/admin/highAvailability/journalNode/step3_view');
+require('views/main/admin/highAvailability/journalNode/step4_view');
+require('views/main/admin/highAvailability/journalNode/step5_view');
+require('views/main/admin/highAvailability/journalNode/step6_view');
 require('views/main/admin/highAvailability/resourceManager/wizard_view');
 require('views/main/admin/highAvailability/resourceManager/step1_view');
 require('views/main/admin/highAvailability/resourceManager/step2_view');

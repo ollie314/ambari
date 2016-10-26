@@ -844,6 +844,7 @@ Em.I18n.translations = {
   'installer.step4.serviceCheck.popup.body':'You did not select {0}, but it is needed by other services you selected. We will automatically add {0}. Is this OK?',
   'installer.step4.limitedFunctionality.popup.header':'Limited Functionality Warning',
   'installer.step4.ambariMetricsCheck.popup.body':'Ambari Metrics collects metrics from the cluster and makes them available to Ambari.  If you do not install Ambari Metrics service, metrics will not be accessible from Ambari.  Are you sure you want to proceed without Ambari Metrics?',
+  'installer.step4.ambariInfraCheck.popup.body':'Since Ambari Infra is not selected, you must supply your own Solr to make Atlas work. Are you sure you want to proceed?',
   'installer.step4.smartSenseCheck.popup.body':'SmartSense securely collects cluster diagnostics in order to send you recommendations and automate analysis for ' +
   'troubleshooting support cases. If you choose not to install SmartSense, you will not receive any recommendations, and you ' +
   'will need to collect configuration and logs manually for troubleshooting support cases. ' +
@@ -1267,6 +1268,53 @@ Em.I18n.translations = {
   'admin.kerberos.disable.inProgress': 'Please wait while cluster is being unkerberized',
   'admin.kerberos.disable.notice.completed': 'Services have been successfully tested without kerberos environment.',
   'admin.kerberos.wizard.step1.notice.inProgress': 'Please wait while cluster is being unkerberized',
+
+  'admin.manageJournalNode.label': 'Manage JournalNode',
+  'admin.manageJournalNode.wizard.header': 'Manage JournalNode Wizard',
+  'admin.manageJournalNode.wizard.step1.header': 'Assign JournalNodes',
+  'admin.manageJournalNode.wizard.step2.header': 'Review',
+  'admin.manageJournalNode.wizard.step3.header': 'Save Namespace',
+  'admin.manageJournalNode.wizard.step4.header': 'Add/Remove JournalNodes',
+  'admin.manageJournalNode.wizard.step5.header': 'Format JournalNodes',
+  'admin.manageJournalNode.wizard.step6.header': 'Start Services',
+
+  'admin.manageJournalNode.wizard.step1.body': 'Assign hosts to JournalNodes',
+  'admin.manageJournalNode.wizard.step3.confirm.config.body':'<div class="alert alert-info">' +
+  '<b>Review Configuration Changes.</b></br>' +
+  'The following lists the configuration changes that will be made by the Wizard to manage JournalNode. This information is for <b> review only </b>.' +
+  '</div>',
+
+  'admin.manageJournalNode.wizard.step4.task0.title': 'Stop Services',
+  'admin.manageJournalNode.wizard.step4.task1.title': 'Add JournalNodes',
+  'admin.manageJournalNode.wizard.step4.task2.title': 'Start JournalNodes',
+  'admin.manageJournalNode.wizard.step4.task3.title': 'Reconfigure HDFS',
+  'admin.manageJournalNode.wizard.step6.task0.title': 'Start All Services',
+
+  'admin.manageJournalNode.wizard.step5.bodyHeader': 'Manual Steps Required: Format JournalNodes',
+
+  'admin.manageJournalNode.step4.save.configuration.note' : 'This configuration is created by Manage JournalNode Wizard',
+
+  'admin.manageJournalNode.wizard.progressPage.notice.inProgress': 'Please wait JournalNodes being deployed',
+  'admin.manageJournalNode.wizard.step6.notice.inProgress': 'Please wait for all serviced to be started',
+
+  'admin.manageJournalNode.wizard.step4.notice.inProgress': 'Please wait JournalNodes being deployed',
+  'admin.manageJournalNode.wizard.step3.body':
+  '<ol>' +
+  '<li>Login to the NameNode host <b>{1}</b>.</li>' +
+  '<li>Put the NameNode in Safe Mode (read-only mode):' +
+  '<div class="code-snippet">sudo su {0} -l -c \'hdfs dfsadmin -safemode enter\'</div></li>' +
+  '<li>Once in Safe Mode, create a Checkpoint:' +
+  '<div class="code-snippet">sudo su {0} -l -c \'hdfs dfsadmin -saveNamespace\'</div></li>' +
+  '<li>You will be able to proceed once Ambari detects that the NameNode is in Safe Mode and the Checkpoint has been created successfully.</li>'+
+  '<div class="alert alert-warn">If the <b>Next</b> button is enabled before you run the <b>"Step 3: Save Namespace"</b> command, it means there is a recent Checkpoint already and you may proceed without running the <b>"Step 3: Save Namespace"</b> command.</div>' +
+  '</ol>',
+  'admin.manageJournalNode.wizard.step5.body':
+  '<ol>' +
+  '<li>Login to the NameNode host <b>{1}</b>.</li>' +
+  '<li>Initialize the JournalNodes by running:' +
+  '<div class="code-snippet">sudo su {0} -l -c \'hdfs namenode -initializeSharedEdits\'</div></li>' +
+  '<li>You will be able to proceed once Ambari detects that the JournalNodes have been initialized successfully.</li>' +
+  '</ol>',
 
   'admin.highAvailability':' High Availability',
   'admin.highAvailability.button.enable':'Enable NameNode HA',
