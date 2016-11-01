@@ -53,11 +53,13 @@ import org.apache.ambari.server.state.UpgradeHelper.UpgradeGroupHolder;
 import org.apache.ambari.server.state.stack.ConfigUpgradePack;
 import org.apache.ambari.server.state.stack.UpgradePack;
 import org.apache.ambari.server.state.stack.upgrade.ConfigUpgradeChangeDefinition;
+import org.apache.ambari.server.state.stack.upgrade.ConfigUpgradeChangeDefinition.ConfigurationKeyValue;
 import org.apache.ambari.server.state.stack.upgrade.ConfigureTask;
 import org.apache.ambari.server.state.stack.upgrade.Direction;
 import org.apache.ambari.server.state.stack.upgrade.ExecuteTask;
 import org.apache.ambari.server.state.stack.upgrade.Grouping;
 import org.apache.ambari.server.state.stack.upgrade.ManualTask;
+import org.apache.ambari.server.state.stack.upgrade.SecurityCondition;
 import org.apache.ambari.server.state.stack.upgrade.StageWrapper;
 import org.apache.ambari.server.state.stack.upgrade.StopGrouping;
 import org.apache.ambari.server.state.stack.upgrade.Task;
@@ -72,6 +74,7 @@ import org.junit.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Binder;
@@ -86,8 +89,8 @@ import com.google.inject.util.Modules;
  */
 public class UpgradeHelperTest {
 
-  private static final StackId HDP_21 = new StackId("HPD-2.1.1");
-  private static final StackId HDP_22 = new StackId("HPD-2.2.0");
+  private static final StackId HDP_21 = new StackId("HDP-2.1.1");
+  private static final StackId HDP_22 = new StackId("HDP-2.2.0");
   private static final String UPGRADE_VERSION = "2.2.1.0-1234";
   private static final String DOWNGRADE_VERSION = "2.2.0.0-1234";
 
@@ -649,7 +652,7 @@ public class UpgradeHelperTest {
     Cluster cluster = makeCluster();
 
     UpgradeContext context = new UpgradeContext(m_masterHostResolver, HDP_21,
-                                                HDP_21, UPGRADE_VERSION, Direction.UPGRADE, UpgradeType.ROLLING);
+        HDP_21, UPGRADE_VERSION, Direction.UPGRADE, UpgradeType.ROLLING);
 
     List<UpgradeGroupHolder> groups = m_upgradeHelper.createSequence(upgrade, context);
 
@@ -658,7 +661,7 @@ public class UpgradeHelperTest {
     // grab the configure task out of Hive
     UpgradeGroupHolder hiveGroup = groups.get(4);
     assertEquals("HIVE", hiveGroup.name);
-    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(2).getTasks().get(0).getTasks().get(0);
+    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(1).getTasks().get(0).getTasks().get(0);
 
     // now change the thrift port to http to have the 2nd condition invoked
     Map<String, String> hiveConfigs = new HashMap<String, String>();
@@ -732,7 +735,8 @@ public class UpgradeHelperTest {
     assertEquals("HIVE", hiveGroup.name);
 
     //Condition is met
-    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(3).getTasks().get(0).getTasks().get(0);
+    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(2).getTasks().get(
+        0).getTasks().get(0);
     Map<String, String> configProperties = configureTask.getConfigurationChanges(cluster, cup);
 
     assertFalse(configProperties.isEmpty());
@@ -841,7 +845,7 @@ public class UpgradeHelperTest {
     assertEquals("HIVE", hiveGroup.name);
 
     //Condition is not met, so no config operations should be present in the configureTask...
-    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(4).getTasks().get(0).getTasks().get(0);
+    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(3).getTasks().get(0).getTasks().get(0);
     Map<String, String> configProperties = configureTask.getConfigurationChanges(cluster, cup);
 
     assertFalse(configProperties.isEmpty());
@@ -853,7 +857,6 @@ public class UpgradeHelperTest {
 
     String configurationJson = configProperties.get(ConfigureTask.PARAMETER_KEY_VALUE_PAIRS);
     String transferJson = configProperties.get(ConfigureTask.PARAMETER_TRANSFERS);
-    System.out.println(" testConfigTaskConditionSkip >> transferJson"+transferJson);
 
     String replacementJson = configProperties.get(ConfigureTask.PARAMETER_REPLACEMENTS);
     assertNotNull(configurationJson);
@@ -876,6 +879,12 @@ public class UpgradeHelperTest {
     assertTrue(transfers.isEmpty());
   }
 
+  /**
+   * Tests that {@link ConfigurationKeyValue} pairs on a {@link ConfigureTask}
+   * are correctly returned based on the if-conditions.
+   *
+   * @throws Exception
+   */
   @Test
   public void testConfigureTask() throws Exception {
     Map<String, UpgradePack> upgrades = ambariMetaInfo.getUpgradePacks("HDP", "2.1.1");
@@ -894,30 +903,19 @@ public class UpgradeHelperTest {
 
     assertEquals(7, groups.size());
 
-    // grab the configure task out of Hive
+    // grab the first configure task out of Hive
     UpgradeGroupHolder hiveGroup = groups.get(4);
     assertEquals("HIVE", hiveGroup.name);
-    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(1).getTasks().get(
-        0).getTasks().get(0);
+    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(1).getTasks().get(0).getTasks().get(0);
 
     Map<String, String> configProperties = configureTask.getConfigurationChanges(cluster, cup);
     assertFalse(configProperties.isEmpty());
     assertEquals(configProperties.get(ConfigureTask.PARAMETER_CONFIG_TYPE), "hive-site");
 
-    String configurationJson = configProperties.get(ConfigureTask.PARAMETER_KEY_VALUE_PAIRS);
-    assertNotNull(configurationJson);
-
-    List<ConfigUpgradeChangeDefinition.ConfigurationKeyValue> keyValuePairs = m_gson.fromJson(configurationJson,
-        new TypeToken<List<ConfigUpgradeChangeDefinition.ConfigurationKeyValue>>() {
-        }.getType());
-
-    assertEquals("hive.server2.thrift.port", keyValuePairs.get(0).key);
-    assertEquals("10010", keyValuePairs.get(0).value);
-
-    // now change the thrift port to http to have the 2nd condition invoked
+    // now set the property in the if-check in the set element so that we have a match
     Map<String, String> hiveConfigs = new HashMap<String, String>();
-    hiveConfigs.put("hive.server2.transport.mode", "http");
-    hiveConfigs.put("hive.server2.thrift.port", "10001");
+    hiveConfigs.put("fooKey", "THIS-BETTER-CHANGE");
+    hiveConfigs.put("ifFooKey", "ifFooValue");
     ConfigurationRequest configurationRequest = new ConfigurationRequest();
     configurationRequest.setClusterName(cluster.getClusterName());
     configurationRequest.setType("hive-site");
@@ -935,20 +933,22 @@ public class UpgradeHelperTest {
       }
     }, null);
 
-    // the configure task should now return different properties
+    // the configure task should now return different properties to set based on
+    // the if-condition checks
     configProperties = configureTask.getConfigurationChanges(cluster, cup);
     assertFalse(configProperties.isEmpty());
     assertEquals( configProperties.get(ConfigureTask.PARAMETER_CONFIG_TYPE), "hive-site");
 
-    configurationJson = configProperties.get(ConfigureTask.PARAMETER_KEY_VALUE_PAIRS);
+    String configurationJson = configProperties.get(ConfigureTask.PARAMETER_KEY_VALUE_PAIRS);
     assertNotNull(configurationJson);
 
-    keyValuePairs = m_gson.fromJson(configurationJson,
+    List<ConfigUpgradeChangeDefinition.ConfigurationKeyValue> keyValuePairs = m_gson.fromJson(
+        configurationJson,
         new TypeToken<List<ConfigUpgradeChangeDefinition.ConfigurationKeyValue>>() {
         }.getType());
 
-    assertEquals("hive.server2.http.port", keyValuePairs.get(0).key);
-    assertEquals("10011", keyValuePairs.get(0).value);
+    assertEquals("fooKey", keyValuePairs.get(0).key);
+    assertEquals("fooValue", keyValuePairs.get(0).value);
   }
 
   @Test
@@ -970,7 +970,7 @@ public class UpgradeHelperTest {
     // grab the configure task out of Hive
     UpgradeGroupHolder hiveGroup = groups.get(4);
     assertEquals("HIVE", hiveGroup.name);
-    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(2).getTasks().get(0).getTasks().get(0);
+    ConfigureTask configureTask = (ConfigureTask) hiveGroup.items.get(1).getTasks().get(0).getTasks().get(0);
 
     Map<String, String> configProperties = configureTask.getConfigurationChanges(cluster, cup);
     assertFalse(configProperties.isEmpty());
@@ -1809,7 +1809,9 @@ public class UpgradeHelperTest {
     };
 
     MasterHostResolver resolver = new MasterHostResolver(m_configHelper, c);
-    UpgradeContext context = new UpgradeContext(resolver, stackId, stackId2, "2.2.0", Direction.UPGRADE, UpgradeType.NON_ROLLING);
+    UpgradeContext context = new UpgradeContext(resolver, stackId, stackId2, "2.2.0",
+        Direction.UPGRADE, UpgradeType.NON_ROLLING);
+
     List<UpgradeGroupHolder> groups = m_upgradeHelper.createSequence(upgradePack, context);
 
     assertEquals(1, groups.size());
@@ -1817,10 +1819,61 @@ public class UpgradeHelperTest {
     sch1.setVersion("2.1.1");
     sch2.setVersion("2.1.1");
     resolver = new MasterHostResolver(m_configHelper, c, "2.1.1");
-    context = new UpgradeContext(resolver, stackId2, stackId, "2.1.1", Direction.DOWNGRADE, UpgradeType.NON_ROLLING);
+    context = new UpgradeContext(resolver, stackId2, stackId, "2.1.1", Direction.DOWNGRADE,
+        UpgradeType.NON_ROLLING);
+
     groups = m_upgradeHelper.createSequence(upgradePack, context);
 
     assertTrue(groups.isEmpty());
+  }
+
+  /**
+   * Tests that the {@link SecurityCondition} element correctly restricts the groups in
+   * an upgrade.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testUpgradeConditions() throws Exception {
+    Map<String, UpgradePack> upgrades = ambariMetaInfo.getUpgradePacks("HDP", "2.2.0");
+    assertTrue(upgrades.containsKey("upgrade_test_conditions"));
+    UpgradePack upgrade = upgrades.get("upgrade_test_conditions");
+    assertNotNull(upgrade);
+
+    Cluster cluster = makeCluster();
+
+    UpgradeContext context = new UpgradeContext(m_masterHostResolver, HDP_22,
+        HDP_22, UPGRADE_VERSION, Direction.UPGRADE, UpgradeType.ROLLING);
+
+    // initially, no conditions should be met
+    List<UpgradeGroupHolder> groups = m_upgradeHelper.createSequence(upgrade, context);
+    assertEquals(0, groups.size());
+
+    // set the configuration property and try again
+    Map<String, String> fooConfigs = new HashMap<String, String>();
+    fooConfigs.put("foo-property", "foo-value");
+    ConfigurationRequest configurationRequest = new ConfigurationRequest();
+    configurationRequest.setClusterName(cluster.getClusterName());
+    configurationRequest.setType("foo-site");
+    configurationRequest.setVersionTag("version1");
+    configurationRequest.setProperties(fooConfigs);
+
+    final ClusterRequest clusterRequest = new ClusterRequest(cluster.getClusterId(),
+        cluster.getClusterName(), cluster.getDesiredStackVersion().getStackVersion(), null);
+
+    clusterRequest.setDesiredConfig(Collections.singletonList(configurationRequest));
+    m_managementController.updateClusters(Sets.newHashSet(clusterRequest), null);
+
+    // the config condition should now be set
+    groups = m_upgradeHelper.createSequence(upgrade, context);
+    assertEquals(1, groups.size());
+    assertEquals("ZOOKEEPER_CONFIG_CONDITION_TEST", groups.get(0).name);
+
+    // now change the cluster security so the other conditions come back too
+    cluster.setSecurityType(SecurityType.KERBEROS);
+
+    groups = m_upgradeHelper.createSequence(upgrade, context);
+    assertEquals(3, groups.size());
   }
 
   /**
