@@ -118,6 +118,7 @@ footer {
 }
 .form-control {
   height: 30px;
+  float: none;
 }
 table.diff {
   white-space: normal;
@@ -134,9 +135,27 @@ table.diff {
   line-height: 30px;
 }
 
+.spinner-text {
+  line-height: @spinner-default-height;
+}
+
 .heatmap-select-metric-btn, .heatmap-select-metric-btn:focus {
   font-size: 13px;
   padding: 10px;
+}
+
+.row.row-no-pad {
+  .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12,
+  .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12 {
+    padding-left: 1px;
+    padding-right: 1px;
+    &:first-child {
+      padding-left: 15px;
+    }
+    &:last-child {
+      padding-right: 15px;
+    }
+  }
 }
 
 .ru-badge {
@@ -562,63 +581,6 @@ table.diff {
   float: none;
 }
 
-.page-bar {
-  border: 1px solid #E4E4E4;
-  color: #7B7B7B;
-  text-align: right;
-  font-size: 12px;
-  background-color: #FFFFFF;
-  label {
-    font-size: 12px;
-  }
-  .pagination {
-    margin: 0;
-  }
-  div {
-    display: inline-block;
-    margin:0 10px;
-  }
-  .filtered-info, .selected-hosts-info {
-    text-align: left;
-    margin-top: 8px;
-    margin-left: 17px;
-  }
-  .items-on-page {
-    label {
-      display:inline;
-    }
-    select {
-      display: initial;
-      margin-bottom: 4px;
-      margin-top: 4px;
-      width:70px;
-      font-size: 12px;
-      height: 27px;
-    }
-  }
-  .paging_two_button {
-    li.paginate_disabled_next, li.paginate_disabled_previous {
-      color: gray;
-      &:hover {
-        color: gray;
-        text-decoration: none;
-        cursor: default;
-      }
-    }
-
-    li.paginate_next, li.paginate_previous {
-      &:hover {
-        text-decoration: none;
-        cursor: pointer;
-      }
-    }
-    li {
-      padding:0 5px;
-      color: #0088cc;
-    }
-  }
-}
-
 .hidden-scroll {
   overflow-y: hidden;
 }
@@ -826,6 +788,9 @@ h1 {
     }
   }
   .wizard-content {
+    .panel.panel-default.panel-internal {
+      border: 1px solid #ddd;
+    }
     padding: 25px;
     background-color: #fff;
 
@@ -902,6 +867,11 @@ h1 {
     }
   }
   #confirm-hosts {
+
+    .page-bar {
+      border: none;
+    }
+
     table {
       margin-bottom: 0;
       th {
@@ -914,15 +884,6 @@ h1 {
       .tinyspan {
         width: 2%;
         float: none;
-      }
-    }
-    .box-header {
-      padding: 0 4px 0 10px;
-      background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #e5e5e5));
-      background: -ms-linear-gradient(top, #ffffff, #e5e5e5);
-      background: -moz-linear-gradient(center top, #ffffff 0%, #e5e5e5 100%);
-      .btn-primary {
-        margin-top: 3px;
       }
     }
 
@@ -1041,19 +1002,12 @@ h1 {
     }
   }
   #deploy {
+
+    .page-bar {
+      border: none;
+    }
     .pre-scrollable {
       max-height: 750px;
-    }
-    #overallProgress {
-    }
-    .box-header {
-      padding: 0 4px 0 10px;
-      background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #e5e5e5));
-      background: -ms-linear-gradient(top, #ffffff, #e5e5e5);
-      background: -moz-linear-gradient(center top, #ffffff 0%, #e5e5e5 100%);
-      .btn-primary {
-        margin-top: 3px;
-      }
     }
     table {
       margin-bottom: 0;
@@ -1194,7 +1148,7 @@ h1 {
       margin-left: 0;
     }
   }
-  #ha-step1, #ha-step4, #ha-step8 {
+  #ha-step1, #ha-step4, #ha-step8, #mjn-step7 {
     .alert.alert-warn {
       margin-top: 10px;
       margin-bottom: 10px;
@@ -1204,7 +1158,7 @@ h1 {
     }
   }
 
-  #ha-step4 li, #ha-step6 li, #ha-step8 li {
+  #ha-step4 li, #ha-step6 li, #ha-step8 li, #mjn-step7 li {
     margin-top: 8px;
   }
 
@@ -1255,14 +1209,10 @@ h1 {
 
 #summary-restart-bar {
   margin-top: 20px;
-  .alert{
-    .glyphicon-refresh{
-      margin-left:10px;
+  .alert {
+    .glyphicon-refresh {
       color: #fdb82f;
     }
-  }
-  .dropdown-menu > li > a:hover {
-    text-shadow: none;
   }
 }
 
@@ -1286,7 +1236,6 @@ h1 {
     min-width: 280px;
   }
   .panel-heading {
-    background-color: #f0f0f0;
     cursor: pointer;
   }
   .panel-group {
@@ -1405,6 +1354,9 @@ h1 {
     }
   }
   .common-config-category, .enhanced-config-tab-content  {
+    .panel-title {
+      line-height: 16px;
+    }
     .action {
       cursor: pointer;
     }
@@ -1578,46 +1530,6 @@ a:focus {
 @rack-state-toggler: url("/img/rack-state-toggler.png");
 @rack-state-plus: url("/img/rack-state-plus.png");
 @rack-state-minus: url("/img/rack-state-minus.png");
-
-/*****start styles for boxes*****/
-.box {
-  border: 1px solid #D4D4D4;
-  margin-bottom: 20px;
-  background-color: #FFFFFF;
-
-  .box-header {
-    border-bottom: 1px solid #D4D4D4;
-  }
-  .box-header,
-  .box-footer {
-    padding: 4px 4px 4px 10px;
-    background: #f5f5f5;
-  }
-  .box-header:after,
-  .box-footer:after {
-    content: "";
-    display: table;
-    clear: both;
-  }
-  .box-header {
-    .btn-group {
-      float: right;
-    }
-    h4 {
-      float: left;
-      margin: 5px;
-      font-size: 15px;
-      color: #777;
-    }
-  }
-  .box-footer {
-    hr {
-      margin: 0;
-    }
-  }
-}
-
-/*****end styles for boxes*****/
 
 /*****start styles for well *****/
 .well {
@@ -2000,15 +1912,19 @@ a:focus {
 
 .task-detail-info {
   .task-detail-log-info {
-    max-height: 340px;
+    max-height: 500px;
     overflow: auto;
     width: 100%;
   }
   .task-detail-log-clipboard {
-    display: none;
+    width: 100%;
     resize: none;
     overflow: hidden;
     box-sizing: border-box;
+    line-height: 14px;
+    font-size: 11px;
+    font-family: monospace;
+    word-break: normal;
   }
 
   .task-top-wrap {
@@ -2066,10 +1982,6 @@ a:focus {
 
 /*start services summary*/
 .services {
-  margin-left: 0;
-  margin-top: 0;
-  position: relative;
-
   .alert{
     padding: 5px;
   }
@@ -2231,18 +2143,16 @@ a:focus {
 }
 
 .summary-info {
-  border-top: none;
-  border-collapse: collapse;
   color: #666;
   font-size: 13px;
-  tr.component-small {
-    font-size: 11px;
+  line-height: 16px;
+  .row {
+    margin-bottom: 8px;
   }
   .upgrade-status-warning {
     color: @health-status-red;
   }
-  tr td:first-child {
-    width: 180px;
+  .summary-label {
     text-align: right;
   }
   a {
@@ -2660,11 +2570,9 @@ a:focus {
 a.services-menu-blocks{
   overflow:auto;
   .icon-health-block{
-    width:16%;
     float:left;
   }
   .service-name-block{
-    width:55%;
     float:left;
     white-space:normal;
     word-break:break-word;
@@ -2696,25 +2604,6 @@ a.services-menu-blocks{
     padding: 0 2px;
     margin: 0 2px;
   }
-
-  .nav li.dropdown.open {
-    .dropdown-toggle{
-      color: #005580;
-      background-color: #eeeeee;
-      border-color: #eeeeee;
-      -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-      -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-    }
-    a:hover .caret {
-      border-top-color: #005580;
-      border-bottom-color: #005580;
-    }
-    .caret {
-      border-top-color: #005580;
-      border-bottom-color: #005580;
-    }
-  }
 }
 .host-rack-id-popup {
   .control-label {
@@ -2723,52 +2612,9 @@ a.services-menu-blocks{
   }
 }
 
-.service-content {
-  .summary-info {
-    margin-bottom: 0;
-  }
-}
 
 .service-block {
   margin-top: 20px;
-}
-
-.service-configuration {
-  padding: 10px;
-}
-
-.service-summary {
-  background: #F6FAFD;
-  .service-block.col-md-8 {
-    margin-left: 0;
-    border-right: 1px solid #5fa3c3;
-  }
-  .service-block.col-md-3 {
-    padding-left: 0;
-  }
-  .service-content {
-    padding: 5px 0 0 10px;
-    .service-links {
-      padding: 5px 0;
-    }
-  }
-  h5 {
-    color: #0088CC;
-    font-size: 14px;
-  }
-  .service-links {
-    padding: 5px 0 10px 0;
-  }
-  .service-configuration .dl-horizontal {
-    dt {
-      width: 90px;
-      line-height: 19px;
-    }
-    dd {
-      margin-left: 100px;
-      line-height: 19px;
-    }
-  }
 }
 
 .service-button {
@@ -2862,7 +2708,6 @@ table.graphs {
       li {
         display: block;
         padding: 3px 0 3px 5px;
-        line-height: 20px;
         .checkbox {
           margin: 0;
         }
@@ -3343,48 +3188,6 @@ table.graphs {
     position: relative;
     top: 10px;
   }
-  .box-header {
-    margin-left: 0;
-    .btn-group {
-      float: left;
-    }
-    .btn.decommission {
-      margin-left: 5px;
-    }
-    .btn.add-host-button {
-      margin-bottom: 10px;
-      margin-top: -5px;
-    }
-    .health-status-bar {
-      font-size: 0.9em;
-      margin-left: 0;
-      color: #b4b4b4;
-      a {
-        text-decoration: none;
-      }
-      .category-item:hover {
-        cursor: pointer;
-        a {
-          color: #ffffff;
-        }
-      }
-      .active {
-        a {
-          color: #ffffff;
-        }
-        background-color: #888888;
-        border-color: #888888;
-        -webkit-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.25);
-        -moz-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.25);
-        box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.25);
-      }
-      .category-item.active:hover {
-        a {
-          color: #ffffff;
-        }
-      }
-    }
-  }
   .progress {
     margin-bottom: 0;
   }
@@ -3658,9 +3461,6 @@ table.graphs {
   }
   .warnings-list {
     .block {
-      .panel-heading {
-        background-color: #f0f0f0;
-      }
       table {
         width: 100%;
         td, th {
@@ -3731,12 +3531,6 @@ table.graphs {
     border-bottom-color: #000000;
   }
 
-  //hack to apply style only for firefox
-  .host-components .btn-group{
-   white-space: normal;
-  }
-
-
   .marker {
     background-repeat: no-repeat;
     height: 13px;
@@ -3798,19 +3592,13 @@ table.graphs {
     margin-bottom: 5px;
   }
 
-  .box-header .host-title {
-    margin: 0;
-    padding-left: 17px;
-  }
-
   hr {
     margin-bottom: 0;
     clear: both;
   }
 
   .content {
-    padding: 10px;
-
+    padding: 10px 0;
   }
 
   .host-configuration .dl-horizontal {
@@ -3840,29 +3628,19 @@ table.graphs {
 
   .host-components {
     padding: 10px;
-    padding-bottom: 0;
     border-radius: 4px;
     background: #FFF;
+    .component-name-block-wrapper {
+      display: table;
+      height: 34px;
+      .component-name-block {
+        white-space: normal;
+        word-wrap: break-word;
+        display: table-cell;
+        vertical-align: middle;
+      }
 
-  }
-
-  .host-components .btn-group {
-    margin: 0 5px 10px 0;
-
-    .component-text-status{
-      cursor: default;
-      display: block;
-      padding: 3px 20px;
-      clear: both;
-      font-weight: normal;
-      line-height: 20px;
-      color: #333333;
-      white-space: nowrap;
-      font-style: italic;
     }
-  }
-
-  .host-components {
     .dropdown-menu {
       .disabled {
         pointer-events: none;
@@ -3873,7 +3651,38 @@ table.graphs {
         pointer-events: auto;
       }
     }
+    .status-icons {
+      line-height: 34px;
+    }
+    .client-list {
+      ul {
+        list-style: none;
+      }
+    }
+    &>.row {
+      padding-bottom: 10px;
+    }
+    .btn-group {
+      //hack to apply style only for firefox
+      white-space: normal;
+      margin: 0 5px 10px 0;
+      & > .btn {
+        width: 140px;
+      }
+      .component-text-status {
+        cursor: default;
+        display: block;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: normal;
+        line-height: 20px;
+        color: #333;
+        white-space: nowrap;
+        font-style: italic;
+      }
+    }
   }
+
   .host-tab-content,
   .logs-tab-content {
     margin-top: 20px;
@@ -4656,6 +4465,11 @@ ul.list-inline li {
   width: 100%
 }
 
+.rack-id {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .big-arrow-right {
   background-repeat: no-repeat;
@@ -4665,13 +4479,6 @@ ul.list-inline li {
 .advanced-header-table {
   table-layout: fixed;
 
-  td {
-    &.rack-id {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
   .sorting_asc {
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAKQWlDQ1BJQ0MgUHJvZmlsZQAASA2dlndUU9kWh8+9N73QEiIgJfQaegkg0jtIFQRRiUmAUAKGhCZ2RAVGFBEpVmRUwAFHhyJjRRQLg4Ji1wnyEFDGwVFEReXdjGsJ7601896a/cdZ39nnt9fZZ+9917oAUPyCBMJ0WAGANKFYFO7rwVwSE8vE9wIYEAEOWAHA4WZmBEf4RALU/L09mZmoSMaz9u4ugGS72yy/UCZz1v9/kSI3QyQGAApF1TY8fiYX5QKUU7PFGTL/BMr0lSkyhjEyFqEJoqwi48SvbPan5iu7yZiXJuShGlnOGbw0noy7UN6aJeGjjAShXJgl4GejfAdlvVRJmgDl9yjT0/icTAAwFJlfzOcmoWyJMkUUGe6J8gIACJTEObxyDov5OWieAHimZ+SKBIlJYqYR15hp5ejIZvrxs1P5YjErlMNN4Yh4TM/0tAyOMBeAr2+WRQElWW2ZaJHtrRzt7VnW5mj5v9nfHn5T/T3IevtV8Sbsz55BjJ5Z32zsrC+9FgD2JFqbHbO+lVUAtG0GQOXhrE/vIADyBQC03pzzHoZsXpLE4gwnC4vs7GxzAZ9rLivoN/ufgm/Kv4Y595nL7vtWO6YXP4EjSRUzZUXlpqemS0TMzAwOl89k/fcQ/+PAOWnNycMsnJ/AF/GF6FVR6JQJhIlou4U8gViQLmQKhH/V4X8YNicHGX6daxRodV8AfYU5ULhJB8hvPQBDIwMkbj96An3rWxAxCsi+vGitka9zjzJ6/uf6Hwtcim7hTEEiU+b2DI9kciWiLBmj34RswQISkAd0oAo0gS4wAixgDRyAM3AD3iAAhIBIEAOWAy5IAmlABLJBPtgACkEx2AF2g2pwANSBetAEToI2cAZcBFfADXALDIBHQAqGwUswAd6BaQiC8BAVokGqkBakD5lC1hAbWgh5Q0FQOBQDxUOJkBCSQPnQJqgYKoOqoUNQPfQjdBq6CF2D+qAH0CA0Bv0BfYQRmALTYQ3YALaA2bA7HAhHwsvgRHgVnAcXwNvhSrgWPg63whfhG/AALIVfwpMIQMgIA9FGWAgb8URCkFgkAREha5EipAKpRZqQDqQbuY1IkXHkAwaHoWGYGBbGGeOHWYzhYlZh1mJKMNWYY5hWTBfmNmYQM4H5gqVi1bGmWCesP3YJNhGbjS3EVmCPYFuwl7ED2GHsOxwOx8AZ4hxwfrgYXDJuNa4Etw/XjLuA68MN4SbxeLwq3hTvgg/Bc/BifCG+Cn8cfx7fjx/GvyeQCVoEa4IPIZYgJGwkVBAaCOcI/YQRwjRRgahPdCKGEHnEXGIpsY7YQbxJHCZOkxRJhiQXUiQpmbSBVElqIl0mPSa9IZPJOmRHchhZQF5PriSfIF8lD5I/UJQoJhRPShxFQtlOOUq5QHlAeUOlUg2obtRYqpi6nVpPvUR9Sn0vR5Mzl/OX48mtk6uRa5Xrl3slT5TXl3eXXy6fJ18hf0r+pvy4AlHBQMFTgaOwVqFG4bTCPYVJRZqilWKIYppiiWKD4jXFUSW8koGStxJPqUDpsNIlpSEaQtOledK4tE20Otpl2jAdRzek+9OT6cX0H+i99AllJWVb5SjlHOUa5bPKUgbCMGD4M1IZpYyTjLuMj/M05rnP48/bNq9pXv+8KZX5Km4qfJUilWaVAZWPqkxVb9UU1Z2qbapP1DBqJmphatlq+9Uuq43Pp893ns+dXzT/5PyH6rC6iXq4+mr1w+o96pMamhq+GhkaVRqXNMY1GZpumsma5ZrnNMe0aFoLtQRa5VrntV4wlZnuzFRmJbOLOaGtru2nLdE+pN2rPa1jqLNYZ6NOs84TXZIuWzdBt1y3U3dCT0svWC9fr1HvoT5Rn62fpL9Hv1t/ysDQINpgi0GbwaihiqG/YZ5ho+FjI6qRq9Eqo1qjO8Y4Y7ZxivE+41smsImdSZJJjclNU9jU3lRgus+0zwxr5mgmNKs1u8eisNxZWaxG1qA5wzzIfKN5m/krCz2LWIudFt0WXyztLFMt6ywfWSlZBVhttOqw+sPaxJprXWN9x4Zq42Ozzqbd5rWtqS3fdr/tfTuaXbDdFrtOu8/2DvYi+yb7MQc9h3iHvQ732HR2KLuEfdUR6+jhuM7xjOMHJ3snsdNJp9+dWc4pzg3OowsMF/AX1C0YctFx4bgccpEuZC6MX3hwodRV25XjWuv6zE3Xjed2xG3E3dg92f24+ysPSw+RR4vHlKeT5xrPC16Il69XkVevt5L3Yu9q76c+Oj6JPo0+E752vqt9L/hh/QL9dvrd89fw5/rX+08EOASsCegKpARGBFYHPgsyCRIFdQTDwQHBu4IfL9JfJFzUFgJC/EN2hTwJNQxdFfpzGC4sNKwm7Hm4VXh+eHcELWJFREPEu0iPyNLIR4uNFksWd0bJR8VF1UdNRXtFl0VLl1gsWbPkRoxajCCmPRYfGxV7JHZyqffS3UuH4+ziCuPuLjNclrPs2nK15anLz66QX8FZcSoeGx8d3xD/iRPCqeVMrvRfuXflBNeTu4f7kufGK+eN8V34ZfyRBJeEsoTRRJfEXYljSa5JFUnjAk9BteB1sl/ygeSplJCUoykzqdGpzWmEtPi000IlYYqwK10zPSe9L8M0ozBDuspp1e5VE6JA0ZFMKHNZZruYjv5M9UiMJJslg1kLs2qy3mdHZZ/KUcwR5vTkmuRuyx3J88n7fjVmNXd1Z752/ob8wTXuaw6thdauXNu5Tnddwbrh9b7rj20gbUjZ8MtGy41lG99uit7UUaBRsL5gaLPv5sZCuUJR4b0tzlsObMVsFWzt3WazrWrblyJe0fViy+KK4k8l3JLr31l9V/ndzPaE7b2l9qX7d+B2CHfc3em681iZYlle2dCu4F2t5czyovK3u1fsvlZhW3FgD2mPZI+0MqiyvUqvakfVp+qk6oEaj5rmvep7t+2d2sfb17/fbX/TAY0DxQc+HhQcvH/I91BrrUFtxWHc4azDz+ui6rq/Z39ff0TtSPGRz0eFR6XHwo911TvU1zeoN5Q2wo2SxrHjccdv/eD1Q3sTq+lQM6O5+AQ4ITnx4sf4H++eDDzZeYp9qukn/Z/2ttBailqh1tzWibakNml7THvf6YDTnR3OHS0/m/989Iz2mZqzymdLz5HOFZybOZ93fvJCxoXxi4kXhzpXdD66tOTSna6wrt7LgZevXvG5cqnbvfv8VZerZ645XTt9nX297Yb9jdYeu56WX+x+aem172296XCz/ZbjrY6+BX3n+l37L972un3ljv+dGwOLBvruLr57/17cPel93v3RB6kPXj/Mejj9aP1j7OOiJwpPKp6qP6391fjXZqm99Oyg12DPs4hnj4a4Qy//lfmvT8MFz6nPK0a0RupHrUfPjPmM3Xqx9MXwy4yX0+OFvyn+tveV0auffnf7vWdiycTwa9HrmT9K3qi+OfrW9m3nZOjk03dp76anit6rvj/2gf2h+2P0x5Hp7E/4T5WfjT93fAn88ngmbWbm3/eE8/syOll+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAA4klEQVQ4Ee2RPw8BQRDF3x4dCokL0SqUKqVSr/ZRruWTaEnUWgkShwji3yWCwoXQOCKCHXPq24hSmGJ3srvz5vdmga8NIhK1GhW2B8q+M+F/96DRRHE0hUEagegUEyK4VdVoqgv3fL2h3HAMQ3I+sQDLCpRdUlWNUux8prjZltXTRUIQ4X4T6HSRcRwkPxLj7r7ZHPXFSgO7A3xgwQfsncRghJKKzpPMPiBv9pBwDQmhgaTgnRU5zD7S86U3necH2CtQJIyKHkWKyXTGCrFZh4XtxxWt4x6eda9u/+U/gZ+dwBODrVwv7HA8iwAAAABJRU5ErkJggg==) no-repeat right 50%;
   }
@@ -4852,10 +4659,6 @@ ul.list-inline li {
 
 /* TIME RANGE WIDGET END */
 
-#host-details .host-components .btn-group > .btn {
-  width: 140px;
-}
-
 /* fieldset begin */
 .fieldset {
   border: 2px solid black;
@@ -4935,13 +4738,6 @@ ul.list-inline li {
   }
 }
 
-//bootstrap
-//.dropdown-menu .active > a, .dropdown-menu .active > a:hover {
-//  background-color: #49AFCD;
-//  background-image: -moz-linear-gradient(center top, #5BC0DE, #2F96B4);
-//}
-//bootstrap end
-
 // COMBOBOX FIXES
 .combobox-container .btn:hover {
   background-position: 0;
@@ -5017,11 +4813,6 @@ ul.list-inline li {
       }
     }
   }
-
-  .summary-width {
-    padding-right: 0;
-  }
-
 
   .assign-masters {
     .host-assignments {
@@ -5124,16 +4915,6 @@ li.break {
     max-height: 416px;
   }
 }
-
-/*
-.progress-striped .bar {
-  background-color: #A5A5A5;
-}
-
-.progress-info.progress-striped .bar, .progress-striped .bar-info {
-  background-color: #A5A5A5;
-}
-*/
 
 .modal-body {
   .api-error {
@@ -5287,11 +5068,6 @@ i.glyphicon-asterisks {
 }
 
 .row .host-component-block {
-  .health-icon-block {
-    width: 6%;
-    float: left;
-    padding-right: 5px;
-  }
 
   .refresh-icon-block {
     width: 6%;
@@ -5302,13 +5078,6 @@ i.glyphicon-asterisks {
     width: 6%;
     float: left;
     padding-left: 3px;
-  }
-
-  .component-name-block {
-    width: 77%;
-    float: left;
-    white-space: normal;
-    word-wrap: break-word;
   }
 }
 
@@ -5880,6 +5649,9 @@ input[type="radio"].align-checkbox, input[type="checkbox"].align-checkbox {
 
 .panel-heading {
   background-color: #f0f0f0;
+  .panel-title {
+    line-height: 34px;
+  }
 }
 
 .config-manage-nav {
@@ -5983,7 +5755,6 @@ input[type="radio"].align-checkbox, input[type="checkbox"].align-checkbox {
 }
 #select-stack {
   .panel-heading {
-    background-color: #f0f0f0;
     font-weight: bold;
     p {
       margin-bottom: 0;

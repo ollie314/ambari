@@ -44,7 +44,7 @@
                 <a {{action openLogFile row file.filePath target="view.parentView"}} href="#" rel="log-file-name-tooltip" {{bindAttr data-original-title="file.filePath"}}>{{file.fileName}}</a>
                 {{#view App.LogSearchUILinkView linkQueryParamsBinding="file.linkTail" tagName="span"}}
                   <a {{bindAttr href="view.formatedLink"}} target="_blank" rel="log-file-name-tooltip" {{translateAttr title="popup.logTail.openInLogSearch"}} class="pull-right external-link">
-                    <i class="glyphicon glyphicon-external-link"></i>
+                    <i class="icon-external-link"></i>
                     {{t popup.logTail.openInLogSearch}}
                   </a>
                 {{/view}}
@@ -55,18 +55,11 @@
       {{/each}}
     {{/if}}
   </tbody>
+  <tfoot>
+  <tr>
+    <td colspan="3">
+      {{view App.PaginationView}}
+    </td>
+  </tr>
+  </tfoot>
 </table>
-
-<div class="page-bar">
-  <div class="filtered-info col-md-4">
-    {{#if view.showFilteredContent}}
-      <label>{{view.filteredContentInfo}} - <a {{action clearFilters target="view"}}
-        href="#">{{t tableView.filters.clearAllFilters}}</a></label>
-    {{/if}}
-  </div>
-  <div class="items-on-page">
-    <label>{{t common.show}}: {{view view.rowsPerPageSelectView selectionBinding="view.displayLength"}}</label>
-  </div>
-  <div class="info">{{view.paginationInfo}}</div>
-  {{view view.pagination2Btns}}
-</div>

@@ -408,11 +408,23 @@ Em.I18n.translations = {
   'hostPopup.reccomendation.beforeDecommission': '{0} Maintenance Mode is pre required for decommissioning.',
   'hostPopup.setRackId.success': 'Updating rack id to \"{0}\". It may take a few moments for it to get refreshed.',
   'hostPopup.setRackId.error': 'Updating the rack id failed.',
-  'hostPopup.setRackId.invalid': 'Should start with a forward slash it may include alphanumeric chars, dots, dashes and forward slashes.',
+  'hostPopup.setRackId.invalid': 'Should start with a forward slash it may include alphanumeric chars, dots, dashes and forward slashes. Should be less than 255 symbols.',
   'hostPopup.RackId': 'Rack',
   'hostPopup.recommendation.beforeDecommission': '{0} Maintenance Mode is pre required for decommissioning.',
 
   'question.sure':'Are you sure?',
+  'question.sure.restart':'Are you sure you want to restart {0}?',
+  'question.sure.start':'Are you sure you want to start {0}?',
+  'question.sure.stop':'Are you sure you want to stop {0}?',
+  'question.sure.move':'Are you sure you want to move {0}?',
+  'question.sure.refresh':'Are you sure you want to restart all clients on {0}?',
+  'question.sure.maintenance':'Are you sure you want to turn on maintenance mode for {0}?',
+  'question.sure.upgrade':'Are you sure you want to upgrade {0}?',
+  'question.sure.decommission':'Are you sure you want to decommission {0}?',
+  'question.sure.recommission':'Are you sure you want to recommission {0}?',
+  'question.sure.startAll':'Are you sure you want to start all the components?',
+  'question.sure.stopAll':'Are you sure you want to stop all the components?',
+  'question.sure.restartAll':'Are you sure you want to restart all the components?',
 
   'popup.highlight':'click to highlight',
   'popup.confirmation.commonHeader':'Confirmation',
@@ -1278,7 +1290,9 @@ Em.I18n.translations = {
   'admin.manageJournalNode.wizard.step3.header': 'Save Namespace',
   'admin.manageJournalNode.wizard.step4.header': 'Add/Remove JournalNodes',
   'admin.manageJournalNode.wizard.step5.header': 'Format JournalNodes',
-  'admin.manageJournalNode.wizard.step6.header': 'Start Services',
+  'admin.manageJournalNode.wizard.step6.header': 'Start Active NameNode',
+  'admin.manageJournalNode.wizard.step7.header': 'BootStrap StandBy NameNode',
+  'admin.manageJournalNode.wizard.step8.header': 'Start All Services',
 
   'admin.manageJournalNode.wizard.step1.body': 'Assign hosts to JournalNodes',
   'admin.manageJournalNode.wizard.step3.confirm.config.body':'<div class="alert alert-info">' +
@@ -1286,20 +1300,30 @@ Em.I18n.translations = {
   'The following lists the configuration changes that will be made by the Wizard to manage JournalNode. This information is for <b> review only </b>.' +
   '</div>',
 
-  'admin.manageJournalNode.wizard.step4.task0.title': 'Stop Services',
-  'admin.manageJournalNode.wizard.step4.task1.title': 'Add JournalNodes',
-  'admin.manageJournalNode.wizard.step4.task2.title': 'Start JournalNodes',
-  'admin.manageJournalNode.wizard.step4.task3.title': 'Reconfigure HDFS',
-  'admin.manageJournalNode.wizard.step6.task0.title': 'Start All Services',
+  'admin.manageJournalNode.wizard.step4.task0.title' : 'Stop Standby NameNode',
+  'admin.manageJournalNode.wizard.step4.task1.title': 'Stop Services',
+  'admin.manageJournalNode.wizard.step4.task2.title': 'Add JournalNodes',
+  'admin.manageJournalNode.wizard.step4.task3.title': 'Delete JournalNodes',
+  'admin.manageJournalNode.wizard.step4.task4.title': 'Start JournalNodes',
+  'admin.manageJournalNode.wizard.step4.task5.title': 'Reconfigure HDFS',
+  'admin.manageJournalNode.wizard.step6.task0.title': 'Start Zookeeper Server',
+  'admin.manageJournalNode.wizard.step6.task1.title': 'Start Active NameNode',
+  'admin.manageJournalNode.wizard.step8.task0.title': 'Stop HDFS',
+  'admin.manageJournalNode.wizard.step8.task1.title': 'Start All Services',
+
 
   'admin.manageJournalNode.wizard.step5.bodyHeader': 'Manual Steps Required: Format JournalNodes',
+  'admin.manageJournalNode.wizard.step7.bodyHeader': 'Manual Steps Required: BootStrap Standby NameNode',
+
 
   'admin.manageJournalNode.step4.save.configuration.note' : 'This configuration is created by Manage JournalNode Wizard',
 
+  'admin.manageJournalNode.wizard.step8.notice.inProgress': 'Wait all services to be started',
   'admin.manageJournalNode.wizard.progressPage.notice.inProgress': 'Please wait JournalNodes being deployed',
-  'admin.manageJournalNode.wizard.step6.notice.inProgress': 'Please wait for all serviced to be started',
-
+  'admin.manageJournalNode.wizard.step6.notice.inProgress': 'Please wait for related services to be started',
   'admin.manageJournalNode.wizard.step4.notice.inProgress': 'Please wait JournalNodes being deployed',
+  'admin.manageJournalNode.wizard.step8.notice.completed':'JournalNodes has been processed successfully.',
+
   'admin.manageJournalNode.wizard.step3.body':
   '<ol>' +
   '<li>Login to the NameNode host <b>{1}</b>.</li>' +
@@ -1310,6 +1334,7 @@ Em.I18n.translations = {
   '<li>You will be able to proceed once Ambari detects that the NameNode is in Safe Mode and the Checkpoint has been created successfully.</li>'+
   '<div class="alert alert-warn">If the <b>Next</b> button is enabled before you run the <b>"Step 3: Save Namespace"</b> command, it means there is a recent Checkpoint already and you may proceed without running the <b>"Step 3: Save Namespace"</b> command.</div>' +
   '</ol>',
+
   'admin.manageJournalNode.wizard.step5.body':
   '<ol>' +
   '<li>Login to the NameNode host <b>{1}</b>.</li>' +
@@ -1317,6 +1342,21 @@ Em.I18n.translations = {
   '<div class="code-snippet">sudo su {0} -l -c \'hdfs namenode -initializeSharedEdits\'</div></li>' +
   '<li>You will be able to proceed once Ambari detects that the JournalNodes have been initialized successfully.</li>' +
   '</ol>',
+
+  'admin.manageJournalNode.wizard.step7.body':
+  '<div class="alert alert-info">' +
+  '<ol start="3">' +
+  '<li>Login to the Additional NameNode host <b>{1}</b>.<br>' +
+  '<div class="alert alert-warn"><strong>Important!</strong> Be sure to login to the Additional NameNode host.<br>This is a different host from previous steps.</div>' +
+  '</li>' +
+  '<li>Initialize the metadata for the Additional NameNode by running:' +
+  '<div class="code-snippet">sudo su {0} -l -c \'hdfs namenode -bootstrapStandby\'</div></li>' +
+  '</ol>' +
+  '</div>' +
+  'Please proceed once you have completed the steps above.',
+
+
+
 
   'admin.highAvailability':' High Availability',
   'admin.highAvailability.button.enable':'Enable NameNode HA',
@@ -1703,6 +1743,9 @@ Em.I18n.translations = {
   'admin.stackVersions.version.upgrade.upgradeOptions.notAllowed':'Not allowed by the current version',
   'admin.stackVersions.version.upgrade.upgradeOptions.EU.confirm.msg': 'You are about to perform an <b>Express Upgrade</b> from <b>{0}</b> to <b>{1}</b>. This will incur cluster downtime. Are you sure you want to proceed?',
   'admin.stackVersions.version.upgrade.upgradeOptions.RU.confirm.msg': 'You are about to perform a <b>Rolling Upgrade</b> from <b>{0}</b> to <b>{1}</b>. Are you sure you want to proceed?',
+  'admin.stackVersions.version.upgrade.upgradeOptions.error': 'Could not proceed with upgrade:',
+  'admin.stackVersions.version.upgrade.upgradeOptions.loading': 'Checking for supported upgrade types...',
+
   'admin.stackVersions.version.upgrade.alertsWarning': 'Cluster alerts will still be visible and recorded in Ambari but notifications (such as Email and SNMP) will be suppressed during the upgrade.',
 
   'admin.stackVersions.version.column.showDetails': "Show Details",
@@ -2600,6 +2643,7 @@ Em.I18n.translations = {
   'hosts.host.deleteComponent.popup.msg1':'Are you sure you want to delete {0}?',
   'hosts.host.deleteComponent.popup.deleteZooKeeperServer':'Deleting <i>ZooKeeper Server</i> may reconfigure such properties:<ul><li>zookeeper.connect</li><li>ha.zookeeper.quorum</li><li>hbase.zookeeper.quorum</li><li>templeton.zookeeper.hosts</li><li>yarn.resourcemanager.zk-address</li><li>hive.zookeeper.quorum</li><li>hive.cluster.delegation.token.store.zookeeper.connectString</li><li>storm.zookeeper.servers</li><li>instance.zookeeper.host</li></ul>',
   'hosts.host.deleteComponent.popup.deleteRangerKMSServer': 'Deleting <i>Ranger KMS Server</i> may reconfigure such properties:<ul><li>hadoop.security.key.provider.path</li><li>dfs.encryption.key.provider.uri</li>',
+  'hosts.host.deleteComponent.popup.deleteJournalNodeMsg': 'You are about to open <i>Manage Journal Node Wizard</i>. Are you sure?',
   'hosts.host.deleteComponent.popup.warning':'<b>WARNING!</b> Delete the last <i>{0}</i> component in the cluster?</br>Deleting the last component in the cluster could result in permanent loss of service data.',
   'hosts.host.deleteComponent.popup.confirm':'Confirm Delete',
   'hosts.host.installComponent.popup.confirm':'Confirm Install',
@@ -2635,6 +2679,7 @@ Em.I18n.translations = {
   'hosts.host.decommissioning':'Decommissioning',
   'hosts.host.addComponent.HIVE_METASTORE':'Adding <i>Hive Metastore</i> will reconfigure such properties:<ul><li>hive.metastore.uris</li><li>templeton.hive.properties</li></ul>',
   'hosts.host.addComponent.WEBHCAT_SERVER':'You are about to add <i>WebHCat Server</i>. Are you sure?',
+  'hosts.host.addComponent.JOURNALNODE': 'You are about to open <i>Manage Journal Node Wizard</i>. Are you sure?',
   'hosts.host.deleteComponent.popup.deleteHiveMetastore':'Deleting <i>Hive Metastore</i> will reconfigure such properties:<ul><li>hive.metastore.uris</li><li>templeton.hive.properties</li></ul>',
   'hosts.host.deleteComponent.popup.deleteWebHCatServer':'You are about to delete <i>WebHCat Server</i>. Are you sure?',
   'hosts.host.configs.save.note': 'This configuration is created by ambari while installing/deleting {0} component on a host',
@@ -2964,6 +3009,7 @@ Em.I18n.translations = {
   'tableView.filters.all': 'All',
   'tableView.filters.filtered': 'Filtered',
   'tableView.filters.clearFilters': 'Clear filters',
+  'tableView.filters.itemsPerPage': 'Items per page:',
   'tableView.filters.paginationInfo': '{0} - {1} of {2}',
   'tableView.filters.clearAllFilters': 'clear filters',
   'tableView.filters.showAll': 'Show All',

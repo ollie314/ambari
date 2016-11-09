@@ -19,33 +19,33 @@
 <div class="row host-block">
   <div class="col-md-6">
       {{!components}}
-    <div class="box">
-      <div class="box-header">
-        <div class="pull-left">
-          <h4>{{t common.components}}</h4>
-        </div>
-        <div class="pull-right col-md-5 row" style="padding:0 10px;">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="panel-title">{{t common.components}}</h4>
+          </div>
+          <div class="col-md-6">
             {{#isAuthorized "HOST.ADD_DELETE_COMPONENTS"}}
-              <div class="btn-group pull-right col-md-6">
-                <button id="add_component"
-                        data-toggle="dropdown" {{bindAttr class="view.addComponentDisabled:disabled :btn :btn-default :dropdown-toggle"}}>
+              <div class="dropdown pull-right">
+                <button id="add_component" data-toggle="dropdown" {{bindAttr class="view.addComponentDisabled:disabled :btn :btn-default :dropdown-toggle"}}>
                   <span class="glyphicon glyphicon-plus"></span>&nbsp;{{t add}}
                 </button>
                 <ul class="dropdown-menu">
-                    {{#each component in view.addableComponents}}
-                      <li>
-                        <a href="javascript:void(null)"
-                           data-toggle="modal" {{action addComponentWithCheck component target="controller"}}>
-                            {{component.displayName}}
-                        </a>
-                      </li>
-                    {{/each}}
+                  {{#each component in view.addableComponents}}
+                    <li>
+                      <a href="javascript:void(null)" data-toggle="modal" {{action addComponentWithCheck component target="controller"}}>
+                        {{component.displayName}}
+                      </a>
+                    </li>
+                  {{/each}}
                 </ul>
               </div>
             {{/isAuthorized}}
+          </div>
         </div>
       </div>
-      <div class="host-components">
+      <div class="host-components panel-body">
           {{#if view.sortedComponents.length}}
 
               {{#isAuthorized "SERVICE.MODIFY_CONFIGS, SERVICE.START_STOP, HOST.ADD_DELETE_COMPONENTS, HOST.TOGGLE_MAINTENANCE"}}
@@ -60,35 +60,40 @@
               {{/isAuthorized}}
 
               {{#each component in view.sortedComponents}}
-                <div class="row">
-                    {{view component.viewClass contentBinding="component"}}
-                </div>
+                {{view component.viewClass classNames="row row-no-pad" contentBinding="component"}}
               {{/each}}
           {{/if}}
           {{!clients and add component button}}
-        <div class="clients row">
-          <div class="col-md-7 row client-list">
+        <div class="clients row row-no-pad">
+          <div class="col-md-7 col-lg-8 row client-list component-name-block-wrapper">
               {{#if view.clients.length}}
                 <div class="col-md-3 align-right">{{t common.clients}}&nbsp;/</div>
-                <div class="col-md-7">
+                <div class="col-md-9 component-name-block-wrapper">
+                  <ul>
                     {{#each component in view.clients}}
-                      <span {{bindAttr class="component.staleConfigs:component-restart-required-name"}}> {{component.displayName}} </span> {{#if component.isInstallFailed}}
-                      &nbsp;<span
-                      class="health-status-installed icon-warning-sign"></span>{{/if}}{{#if component.staleConfigs}}
-                      &nbsp;<span
-                      class="text-warning glyphicon glyphicon-refresh"></span>{{/if}}{{#if component.service.isInPassive}}
-                      &nbsp;<span class="icon-medkit"></span>{{/if}}{{#unless component.isLast}}
-                      ,{{/unless}}
+                      <li>
+                        <span {{bindAttr class="component.staleConfigs:component-restart-required-name"}}>{{component.displayName}}</span>
+                        {{#if component.isInstallFailed}}
+                          &nbsp;<span class="health-status-installed icon-warning-sign"></span>
+                        {{/if}}
+                        {{#if component.staleConfigs}}
+                          &nbsp;<span class="text-warning glyphicon glyphicon-refresh"></span>
+                        {{/if}}
+                        {{#if component.service.isInPassive}}
+                          &nbsp;<span class="icon-medkit"></span>
+                        {{/if}}
+                      </li>
                     {{/each}}
+                  </ul>
                 </div>
               {{/if}}
           </div>
-          <div class="col-md-5 pull-right">
+          <div class="col-md-5 col-lg-4 pull-right">
               {{#isAuthorized "SERVICE.MODIFY_CONFIGS, SERVICE.START_STOP, HOST.ADD_DELETE_COMPONENTS, HOST.TOGGLE_MAINTENANCE"}}
                   {{#if view.clients.length}}
-                    <div class="btn-group pull-right">
+                    <div class="dropdown">
                       <button id="add_component"
-                              data-toggle="dropdown" {{bindAttr class=":btn :btn-default :dropdown-toggle controller.content.isNotHeartBeating:disabled"}}>
+                              data-toggle="dropdown" {{bindAttr class=":btn :btn-default :btn-block :dropdown-toggle controller.content.isNotHeartBeating:disabled"}}>
                           {{t common.installed}}
                         <span class="caret pull-right button-caret-margin"></span>
                       </button>
@@ -140,11 +145,11 @@
       </div>
     </div>
     <div class="host-configuration">
-      <div class="box">
-        <div class="box-header">
-          <h4>{{t hosts.host.summary.header}}</h4>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">{{t hosts.host.summary.header}}</h4>
         </div>
-        <div class="host-summary-content">
+        <div class="host-summary-content panel-body">
           <dl class="dl-horizontal host-details-summary-list">
 
             <dt class="summary-hostname-label">{{t hosts.host.summary.hostname}}:</dt>
@@ -154,7 +159,7 @@
             <dd class="summary-ipaddress-value">&nbsp;{{view.content.ip}}</dd>
 
             <dt class="summary-rack-label">{{t common.rack}}:</dt>
-            <dd class="summary-rack-value">&nbsp;{{view.content.rack}}
+            <dd class="summary-rack-value">&nbsp;{{formatWordBreak view.content.rack}}
                 {{#isAuthorized "HOST.TOGGLE_MAINTENANCE"}}
                   <a class="set-rack-id" {{action setRackId view.content target="controller"}}><i
                     class="glyphicon glyphicon-pencil"></i></a>
@@ -189,12 +194,14 @@
   <div class="col-md-6">
       {{!metrics}}
       {{#unless view.isNoHostMetricsService}}
-        <div class="box">
-          <div class="box-header">
-            <h4>{{t hosts.host.summary.hostMetrics}}</h4>
-              {{view view.timeRangeListView}}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="row">
+              <div class="col-md-6"><h4 class="panel-title">{{t hosts.host.summary.hostMetrics}}</h4></div>
+              <div class="col-md-6">{{view view.timeRangeListView}}</div>
+            </div>
           </div>
-          <div>
+          <div class="panel-body">
               {{view App.MainHostMetricsView contentBinding="view.content"}}
           </div>
         </div>
@@ -202,11 +209,11 @@
 
       {{!logs metrics}}
       {{#if App.supports.logCountVizualization}}
-        <div class="box">
-          <div class="box-header">
-            <h4>{{t hosts.host.summary.hostLogMetrics}}</h4>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">{{t hosts.host.summary.hostLogMetrics}}</h4>
           </div>
-          <div>
+          <div class="panel-body">
               {{view App.MainHostLogMetrics contentBinding="view.content"}}
           </div>
         </div>

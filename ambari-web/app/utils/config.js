@@ -158,15 +158,15 @@ App.config = Em.Object.create({
     var
       baseStackFolder = App.get('currentStackName'),
       singMap = {
-        "1": ">",
-        "-1": "<",
-        "0": "="
+        "1": [">", ">="],
+        "-1": ["<", "<="],
+        "0": ["=", ">=","<="]
       };
 
     this.get('customStackMapping').every(function (stack) {
       if(stack.stackName == App.get('currentStackName')){
         var versionCompare = Em.compare(App.get('currentStackVersionNumber'), stack.stackVersionNumber);
-        if(singMap[versionCompare+""] === stack.sign){
+        if(singMap[versionCompare+""].contains(stack.sign)){
           baseStackFolder = stack.baseStackFolder;
           return false;
         }
@@ -1245,27 +1245,6 @@ App.config = Em.Object.create({
       }).filterProperty('filename', fileName).findProperty('name', name);
     }
     return false;
-  },
-
-  /**
-   * creates config object with non static properties like
-   * 'value', 'isFinal', 'errorMessage' and
-   * 'id', 'name', 'filename',
-   * @param configProperty
-   * @returns {Object}
-   */
-  createMinifiedConfig: function (configProperty) {
-    if (configProperty instanceof Ember.Object) {
-      return configProperty.getProperties('name', 'filename', 'serviceName', 'value', 'isFinal', 'isRequiredByAgent');
-    }
-    return {
-      name: configProperty.name,
-      filename: configProperty.filename,
-      serviceName: configProperty.serviceName,
-      value: configProperty.value,
-      isFinal: configProperty.isFinal,
-      isRequiredByAgent: configProperty.isRequiredByAgent
-    }
   },
 
   /**

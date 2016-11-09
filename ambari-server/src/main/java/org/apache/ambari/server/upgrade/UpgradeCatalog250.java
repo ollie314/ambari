@@ -19,7 +19,6 @@ package org.apache.ambari.server.upgrade;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +27,8 @@ import java.util.Map;
 import org.apache.ambari.server.AmbariException;
 import org.apache.ambari.server.actionmanager.CommandExecutionType;
 import org.apache.ambari.server.controller.AmbariManagementController;
-import org.apache.ambari.server.orm.DBAccessor.DBColumnInfo;
 import org.apache.ambari.server.orm.DBAccessor;
-
+import org.apache.ambari.server.orm.DBAccessor.DBColumnInfo;
 import org.apache.ambari.server.orm.dao.DaoUtils;
 import org.apache.ambari.server.state.Cluster;
 import org.apache.ambari.server.state.Clusters;
@@ -130,8 +128,8 @@ public class UpgradeCatalog250 extends AbstractUpgradeCatalog {
    */
   @Override
   protected void executeDMLUpdates() throws AmbariException, SQLException {
+    addNewConfigurationsFromXml();
     updateAMSConfigs();
-    createRoleAuthorizations();
     updateKafkaConfigs();
   }
 
@@ -190,21 +188,6 @@ public class UpgradeCatalog250 extends AbstractUpgradeCatalog {
     }
 
     return content;
-  }
-
-  /**
-   * Create new role authorizations: CLUSTER.RUN_CUSTOM_COMMAND and AMBARI.RUN_CUSTOM_COMMAND
-   *
-   * @throws SQLException
-   */
-  protected void createRoleAuthorizations() throws SQLException {
-    LOG.info("Adding authorizations");
-
-    addRoleAuthorization("CLUSTER.RUN_CUSTOM_COMMAND", "Perform custom cluster-level actions",
-        Arrays.asList("AMBARI.ADMINISTRATOR:AMBARI", "CLUSTER.ADMINISTRATOR:CLUSTER"));
-
-    addRoleAuthorization("AMBARI.RUN_CUSTOM_COMMAND", "Perform custom administrative actions",
-      Collections.singletonList("AMBARI.ADMINISTRATOR:AMBARI"));
   }
 
   protected void updateKafkaConfigs() throws AmbariException {

@@ -377,10 +377,6 @@ h2.table-title {
 .table tfoot > tr:first-of-type > td {
   border-top-width: 2px;
 }
-.table tfoot .pagination-block .pagination-block-item {
-  float: left;
-  padding: 0 5px;
-}
 .table.table-hover .action {
   visibility: hidden;
   padding: 0;
@@ -421,6 +417,23 @@ h2.table-title {
 .table.table-hover > tbody > tr:first-of-type:hover > td {
   border-color: #A7DFF2;
 }
+.pagination-block .pagination-block-item {
+  float: left;
+  padding: 0 5px;
+}
+.pagination-block .pagination-block-item a,
+.pagination-block .pagination-block-item a:visited,
+.pagination-block .pagination-block-item a:focus {
+  text-decoration: none;
+}
+.pagination-block .pagination-block-item select {
+  border: none;
+  background-color: transparent;
+  color: #1491C1;
+}
+.wizard {
+  border: 2px solid #ebecf1;
+}
 .wizard .wizard-header h3 {
   font-family: 'Roboto', sans-serif;
   font-weight: normal;
@@ -433,15 +446,16 @@ h2.table-title {
 .wizard .wizard-body {
   background: #ebecf1;
   /* Old browsers */
-  background: -moz-linear-gradient(to right, #323544 0%, #323544 24.9%, #ebecf1 25%, #ebecf1 100%);
+  background: -moz-linear-gradient(to right, #323544, #323544 25%, #ebecf1 25%, #ebecf1);
   /* FF3.6-15 */
-  background: -webkit-linear-gradient(to right, #323544 0%, #323544 24.9%, #ebecf1 25%, #ebecf1 100%);
+  background: -webkit-linear-gradient(to right, #323544, #323544 25%, #ebecf1 25%, #ebecf1);
   /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right, #323544 0%, #323544 24.9%, #ebecf1 25%, #ebecf1 100%);
+  background: linear-gradient(to right, #323544, #323544 25%, #ebecf1 25%, #ebecf1);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   margin: 0;
 }
 .wizard .wizard-body .wizard-content {
+  background: #ebecf1;
   padding-top: 25px;
 }
 .wizard .wizard-body .wizard-content .step-title {
@@ -463,10 +477,12 @@ h2.table-title {
   color: #333;
   font-size: 12px;
   padding-left: 10px;
+  line-height: 1.3;
   color: #999;
 }
 .wizard .wizard-body .wizard-content .panel.panel-default {
   border: none;
+  box-shadow: none;
 }
 .wizard .wizard-body .wizard-nav {
   min-height: 650px;
@@ -562,10 +578,11 @@ h2.table-title {
 .wizard .wizard-body .wizard-nav .nav > li > a:hover {
   background-color: inherit;
 }
-.wizard .wizard-footer {
+.wizard .wizard-body .wizard-footer {
+  background: white;
   padding: 15px 20px;
 }
-.wizard .wizard-footer button {
+.wizard .wizard-body .wizard-footer button {
   margin: 0 10px;
 }
 .checkbox-disabled-style {

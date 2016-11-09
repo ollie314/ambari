@@ -124,6 +124,7 @@ import org.apache.ambari.server.view.ViewDirectoryWatcher;
 import org.apache.ambari.server.view.ViewRegistry;
 import org.apache.ambari.server.view.ViewThrottleFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.app.Velocity;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NCSARequestLog;
@@ -504,6 +505,8 @@ public class AmbariServer {
       //Check and load requestlog handler.
       loadRequestlogHandler(handlerList, serverForAgent, configsMap);
 
+      enableLog4jMonitor(configsMap);
+
       handlerList.addHandler(root);
       server.setHandler(handlerList);
 
@@ -684,6 +687,8 @@ public class AmbariServer {
         if (DatabaseConsistencyCheckHelper.ifErrorsFound()) {
           System.out.println("Database consistency check: failed");
           System.exit(1);
+        } else if (DatabaseConsistencyCheckHelper.ifWarningsFound()) {
+          System.out.println("Database consistency check: warning");
         } else {
           System.out.println("Database consistency check: successful");
         }
@@ -805,6 +810,7 @@ public class AmbariServer {
           EnumSet.of(DispatcherType.REQUEST));
 
       gzipFilter.setInitParameter("methods", "GET,POST,PUT,DELETE");
+      gzipFilter.setInitParameter("excludePathPatterns", ".*(\\.woff|\\.ttf|\\.woff2|\\.eot|\\.svg)");
       gzipFilter.setInitParameter("mimeTypes",
           "text/html,text/plain,text/xml,text/css,application/x-javascript," +
               "application/xml,application/x-www-form-urlencoded," +
@@ -971,6 +977,26 @@ public class AmbariServer {
     };
 
     LOG.info(Joiner.on("\n" + linePrefix).join(rawMessages));
+  }
+
+  /**
+   * To change log level without restart.
+   */
+  public static void enableLog4jMonitor(Map<String, String> configsMap){
+
+    String log4jpath = AmbariServer.class.getResource("/"+Configuration.AMBARI_LOG_FILE).toString();
+    String monitorDelay = configsMap.get(Configuration.LOG4JMONITOR_DELAY.getKey());
+    long monitorDelayLong = Configuration.LOG4JMONITOR_DELAY.getDefaultValue();
+
+    try{
+      log4jpath = log4jpath.replace("file:", "");
+      if(StringUtils.isNotBlank(monitorDelay)) {
+        monitorDelayLong = Long.parseLong(monitorDelay);
+      }
+      PropertyConfigurator.configureAndWatch(log4jpath,  monitorDelayLong);
+    }catch(Exception e){
+      LOG.error("Exception in setting log4j monitor delay of {} for {}", monitorDelay, log4jpath, e);
+    }
   }
 
   /**

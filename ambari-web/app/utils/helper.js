@@ -759,13 +759,15 @@ App.format = {
  */
 App.popover = function (self, options) {
   var opts = $.extend(true, {
-    container: 'body'
+    container: 'body',
+    html: true
   }, options || {});
   if (!self) return;
   self.popover(opts);
   self.on("remove", function () {
     $(this).trigger('mouseleave').off().removeData('bs.popover');
   });
+  self = null;
 };
 
 /**
@@ -786,6 +788,7 @@ App.tooltip = function (self, options) {
   self.on("remove", function () {
     $(this).trigger('mouseleave').off().removeData('bs.tooltip');
   });
+  self = null
 };
 
 /**

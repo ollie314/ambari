@@ -116,6 +116,10 @@ import com.google.inject.Singleton;
  */
 @Singleton
 public class Configuration {
+  /**
+   * JVM property with optional path to Makrdown template file.
+   */
+  private static final String AMBARI_CONFIGURATION_MD_TEMPLATE_PROPERTY = "ambari.configuration.md.template";
 
   /**
    * The file to generate the complete Markdown documentation.
@@ -961,6 +965,15 @@ public class Configuration {
       "authentication.ldap.usernameAttribute", "uid");
 
   /**
+   * Declares whether to force the ldap user name to be lowercase or leave as-is. This is useful when
+   * local user names are expected to be lowercase but the LDAP user names are not.
+   */
+  @Markdown(description = "Declares whether to force the ldap user name to be lowercase or leave as-is." +
+      " This is useful when local user names are expected to be lowercase but the LDAP user names are not.")
+  public static final ConfigurationProperty<String> LDAP_USERNAME_FORCE_LOWERCASE = new ConfigurationProperty<>(
+      "authentication.ldap.username.forceLowercase", "false");
+
+  /**
    * The filter used when searching for users in LDAP.
    */
   @Markdown(description = "The filter used when searching for users in LDAP.")
@@ -1385,6 +1398,11 @@ public class Configuration {
   /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
    * Kerberos authentication-specific properties (end)
    * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+
+  @Markdown(description = "The number of times failed kerberos operations should be retried to execute.")
+  public static final ConfigurationProperty<Integer> KERBEROS_OPERATION_RETRIES = new ConfigurationProperty<>(
+      "kerberos.operation.retries", 3);
 
   /**
    * The type of connection pool to use with JDBC connections to the database.
@@ -2449,6 +2467,13 @@ public class Configuration {
   public static final ConfigurationProperty<Boolean> ACTIVE_INSTANCE = new ConfigurationProperty<>(
           "active.instance", Boolean.TRUE);
 
+  /**
+   * PropertyConfigurator checks log4j.properties file change every LOG4JMONITOR_DELAY milliseconds.
+   */
+  @Markdown(description = "Indicates the delay, in milliseconds, for the log4j monitor to check for changes")
+  public static final ConfigurationProperty<Long> LOG4JMONITOR_DELAY = new ConfigurationProperty<>(
+          "log4j.monitor.delay", TimeUnit.MINUTES.toMillis(5));
+
   private static final Logger LOG = LoggerFactory.getLogger(
     Configuration.class);
 
@@ -2625,6 +2650,7 @@ public class Configuration {
     configsMap.put(PARALLEL_STAGE_EXECUTION.getKey(), getProperty(PARALLEL_STAGE_EXECUTION));
     configsMap.put(SERVER_TMP_DIR.getKey(), getProperty(SERVER_TMP_DIR));
     configsMap.put(REQUEST_LOGPATH.getKey(), getProperty(REQUEST_LOGPATH));
+    configsMap.put(LOG4JMONITOR_DELAY.getKey(), getProperty(LOG4JMONITOR_DELAY));
     configsMap.put(REQUEST_LOG_RETAINDAYS.getKey(), getProperty(REQUEST_LOG_RETAINDAYS));
     configsMap.put(EXTERNAL_SCRIPT_TIMEOUT.getKey(), getProperty(EXTERNAL_SCRIPT_TIMEOUT));
     configsMap.put(SHARED_RESOURCES_DIR.getKey(), getProperty(SHARED_RESOURCES_DIR));
@@ -3725,6 +3751,7 @@ public class Configuration {
 
     ldapServerProperties.setBaseDN(getProperty(LDAP_BASE_DN));
     ldapServerProperties.setUsernameAttribute(getProperty(LDAP_USERNAME_ATTRIBUTE));
+    ldapServerProperties.setForceUsernameToLowercase(Boolean.parseBoolean(getProperty(LDAP_USERNAME_FORCE_LOWERCASE)));
     ldapServerProperties.setUserBase(getProperty(LDAP_USER_BASE));
     ldapServerProperties.setUserObjectClass(getProperty(LDAP_USER_OBJECT_CLASS));
     ldapServerProperties.setDnAttribute(getProperty(LDAP_DN_ATTRIBUTE));
@@ -5259,7 +5286,12 @@ public class Configuration {
     // replace the tokens in the markdown template and write out the final MD file
     InputStream inputStream = null;
     try {
-      inputStream = Configuration.class.getResourceAsStream(MARKDOWN_TEMPLATE_FILE);
+      if (System.getProperties().containsKey(AMBARI_CONFIGURATION_MD_TEMPLATE_PROPERTY)) {
+        // for using from IDEA or other tools without whole compilation
+        inputStream = new FileInputStream(System.getProperties().getProperty(AMBARI_CONFIGURATION_MD_TEMPLATE_PROPERTY));
+      } else {
+        inputStream = Configuration.class.getResourceAsStream(MARKDOWN_TEMPLATE_FILE);
+      }
       String template = IOUtils.toString(inputStream);
       String markdown = template.replace(MARKDOWN_CONFIGURATION_TABLE_KEY, allPropertiesBuffer.toString());
       markdown = markdown.replace(MARKDOWN_BASELINE_VALUES_KEY, baselineBuffer.toString());
@@ -5615,5 +5647,9 @@ public class Configuration {
         kerberosAuthProperties.getAuthToLocalRules());
 
     return kerberosAuthProperties;
+  }
+
+  public int getKerberosOperationRetries(){
+    return Integer.valueOf(getProperty(KERBEROS_OPERATION_RETRIES));
   }
 }

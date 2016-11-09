@@ -88,3 +88,4 @@ class StatusCommandsExecutor(multiprocessing.Process):
     # prevent queue from ending up with non-freed semaphores, locks during put. Which would result in dead-lock in process executing get.
     self.actionQueue.statusCommandResultQueue.close()
     self.actionQueue.statusCommandResultQueue.join_thread()
+    self.actionQueue.statusCommandResultQueue = multiprocessing.Queue()

@@ -102,11 +102,11 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
    */
   startComponent: function (event) {
     var self = this;
+    var component = event.context;
     return App.showConfirmationPopup(function () {
-      var component = event.context;
       var context = Em.I18n.t('requestInfo.startHostComponent') + " " + component.get('displayName');
       self.sendComponentCommand(component, context, App.HostComponentStatus.started);
-    });
+    }, Em.I18n.t('question.sure.start').format(component.get('displayName')));
   },
 
   /**
@@ -116,20 +116,19 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
    */
   stopComponent: function (event) {
     var self = this;
+    var component = event.context;
     if (event.context.get('componentName') == 'NAMENODE' ) {
       this.checkNnLastCheckpointTime(function () {
         return App.showConfirmationPopup(function () {
-          var component = event.context;
           var context = Em.I18n.t('requestInfo.stopHostComponent') + " " + component.get('displayName');
           self.sendComponentCommand(component, context, App.HostComponentStatus.stopped);
-        });
+        }, Em.I18n.t('question.sure.stop').format(component.get('displayName')));
       });
     } else {
       return App.showConfirmationPopup(function () {
-        var component = event.context;
         var context = Em.I18n.t('requestInfo.stopHostComponent') + " " + component.get('displayName');
         self.sendComponentCommand(component, context, App.HostComponentStatus.stopped);
-      });
+      }, Em.I18n.t('question.sure.stop').format(component.get('displayName')));
     }
   },
   /**
@@ -318,7 +317,7 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
     var isLastComponent = (this.getTotalComponent(component) === 1);
     return App.ModalPopup.show({
       header: Em.I18n.t('popup.confirmation.commonHeader'),
-      primary: Em.I18n.t('hosts.host.deleteComponent.popup.confirm'),
+      primary: componentName == 'JOURNALNODE'? Em.I18n.t('ok') : Em.I18n.t('hosts.host.deleteComponent.popup.confirm'),
       bodyClass: Em.View.extend({
         templateName: require('templates/main/host/details/deleteComponentPopup')
       }),
@@ -327,6 +326,7 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
       isNimbus: componentName == 'NIMBUS',
       isRangerKMSServer: componentName == 'RANGER_KMS_SERVER',
       isZkServer: componentName == 'ZOOKEEPER_SERVER',
+      isJournalNode: componentName == 'JOURNALNODE',
 
       deleteHiveMetastoreMsg: Em.I18n.t('hosts.host.deleteComponent.popup.deleteHiveMetastore'),
       deleteWebHCatServerMsg: Em.I18n.t('hosts.host.deleteComponent.popup.deleteWebHCatServer'),
@@ -335,6 +335,7 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
       lastComponentError: Em.I18n.t('hosts.host.deleteComponent.popup.warning').format(displayName),
       deleteComponentMsg: Em.I18n.t('hosts.host.deleteComponent.popup.msg1').format(displayName),
       deleteZkServerMsg: Em.I18n.t('hosts.host.deleteComponent.popup.deleteZooKeeperServer'),
+      deleteJournalNodeMsg: Em.I18n.t('hosts.host.deleteComponent.popup.deleteJournalNodeMsg'),
 
       isChecked: false,
       disablePrimary: Em.computed.not('isChecked'),
@@ -345,10 +346,15 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
 
       onPrimary: function () {
         var popup = this;
-        self._doDeleteHostComponent(component, function () {
-          self.set('redrawComponents', true);
+        if (componentName == 'JOURNALNODE') {
           popup.hide();
-        });
+          App.router.transitionTo('main.services.manageJournalNode');
+        } else {
+          self._doDeleteHostComponent(component, function () {
+            self.set('redrawComponents', true);
+            popup.hide();
+          });
+        }
       }
     });
   },
@@ -493,7 +499,7 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
         success: 'upgradeComponentSuccessCallback',
         error: 'ajaxErrorCallback'
       });
-    });
+    }, Em.I18n.t('question.sure.upgrade').format(component.get('displayName')));
   },
 
   /**
@@ -521,12 +527,12 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
       this.checkNnLastCheckpointTime(function () {
         return App.showConfirmationPopup(function () {
           batchUtils.restartHostComponents([component], Em.I18n.t('rollingrestart.context.selectedComponentOnSelectedHost').format(component.get('displayName')), "HOST_COMPONENT");
-        });
+        }, Em.I18n.t('question.sure.restart').format(component.get('displayName')));
       });
     } else {
       return App.showConfirmationPopup(function () {
         batchUtils.restartHostComponents([component], Em.I18n.t('rollingrestart.context.selectedComponentOnSelectedHost').format(component.get('displayName')), "HOST_COMPONENT");
-      });
+      }, Em.I18n.t('question.sure.restart').format(component.get('displayName')));
     }
   },
 
@@ -597,6 +603,11 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
         returnFunc = App.showConfirmationPopup(function () {
           self.set('rangerKMSServerHost', hostName);
           self.loadConfigs("loadRangerConfigs");
+        }, Em.I18n.t('hosts.host.addComponent.' + componentName) + manualKerberosWarning);
+        break;
+      case 'JOURNALNODE':
+        returnFunc = App.showConfirmationPopup(function () {
+          App.router.transitionTo('main.services.manageJournalNode');
         }, Em.I18n.t('hosts.host.addComponent.' + componentName) + manualKerberosWarning);
         break;
       default:
@@ -1523,7 +1534,7 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
     var self = this;
     return App.showConfirmationPopup(function () {
       self.runDecommission.call(self, self.get('content.hostName'), component.get('service.serviceName'));
-    });
+    }, Em.I18n.t('question.sure.decommission').format(component.get('service.serviceName')));
   },
   /**
    * identify correct component to run decommission on them by service name,
@@ -1553,7 +1564,7 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
     var self = this;
     return App.showConfirmationPopup(function () {
       self.runRecommission.call(self, self.get('content.hostName'), component.get('service.serviceName'));
-    });
+    }, Em.I18n.t('question.sure.recommission').format(component.get('service.serviceName')));
   },
   /**
    * identify correct component to run recommission on them by service name,
@@ -2034,7 +2045,7 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
     if (components && components.get('length')) {
       return App.showConfirmationPopup(function () {
         self.sendComponentCommand(components, Em.I18n.t('hosts.host.maintainance.startAllComponents.context'), App.HostComponentStatus.started);
-      });
+      }, Em.I18n.t('question.sure.startAll'));
     }
   },
 
@@ -2052,12 +2063,12 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
         this.checkNnLastCheckpointTime(function () {
           App.showConfirmationPopup(function () {
             self.sendComponentCommand(components, Em.I18n.t('hosts.host.maintainance.stopAllComponents.context'), App.HostComponentStatus.stopped);
-          });
+          }, Em.I18n.t('question.sure.stopAll'));
         });
       } else {
         return App.showConfirmationPopup(function () {
           self.sendComponentCommand(components, Em.I18n.t('hosts.host.maintainance.stopAllComponents.context'), App.HostComponentStatus.stopped);
-        });
+        }, Em.I18n.t('question.sure.stopAll'));
       }
     }
   },
@@ -2076,12 +2087,12 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
         this.checkNnLastCheckpointTime(function () {
           App.showConfirmationPopup(function () {
             batchUtils.restartHostComponents(components, Em.I18n.t('rollingrestart.context.allOnSelectedHost').format(self.get('content.hostName')), "HOST");
-          });
+          }, Em.I18n.t('question.sure.restartAll'));
         });
       } else {
         return App.showConfirmationPopup(function () {
           batchUtils.restartHostComponents(components, Em.I18n.t('rollingrestart.context.allOnSelectedHost').format(self.get('content.hostName')), "HOST");
-        });
+        }, Em.I18n.t('question.sure.restartAll'));
       }
     }
   },
@@ -2460,16 +2471,16 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
    * @method moveComponent
    */
   moveComponent: function (event) {
+    var component = event.context;
     if ($(event.target).closest('li').hasClass('disabled')) {
       return;
     }
     return App.showConfirmationPopup(function () {
-      var component = event.context;
       var reassignMasterController = App.router.get('reassignMasterController');
       reassignMasterController.saveComponentToReassign(component);
       reassignMasterController.setCurrentStep('1');
       App.router.transitionTo('reassign');
-    });
+    }, Em.I18n.t('question.sure.move').format(component.get('displayName')));
   },
 
   /**
@@ -2483,7 +2494,7 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
     if (components.get('length') > 0) {
       return App.showConfirmationPopup(function () {
         batchUtils.restartHostComponents(components, Em.I18n.t('rollingrestart.context.allClientsOnSelectedHost').format(self.get('content.hostName')), "HOST");
-      });
+      }, Em.I18n.t('question.sure.refresh').format(self.get('content.hostName')) );
     }
   },
 
@@ -2494,7 +2505,7 @@ App.MainHostDetailsController = Em.Controller.extend(App.SupportClientConfigsDow
     message = Em.I18n.t('passiveState.turn' + state.toCapital() + 'For').format(event.context.get('displayName'));
     return App.showConfirmationPopup(function () {
       self.updateComponentPassiveState(event.context, state, message);
-    });
+    }, Em.I18n.t('question.sure.maintenance').format(event.context.get('displayName')) );
   },
 
   downloadClientConfigs: function (event) {

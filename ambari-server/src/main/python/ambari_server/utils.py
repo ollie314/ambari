@@ -150,13 +150,8 @@ def wait_for_pid(pids, server_init_timeout, occupy_port_timeout, init_web_ui_tim
   """
     Check pid for existence during timeout
   """
-  ambari_server_ui_port = 8080
-  api_ssl = properties.get_property("api.ssl")
-  ssl_api_port = properties.get_property("client.api.ssl.port")
-  if api_ssl and str(api_ssl).lower() == "true":
-    if ssl_api_port:
-      ambari_server_ui_port = int(ssl_api_port)
-
+  from ambari_server.serverConfiguration import get_ambari_server_ui_port
+  ambari_server_ui_port = int(get_ambari_server_ui_port(properties))
   server_ui_port_occupied = False
   tstart = time.time()
   pid_live = 0
@@ -185,8 +180,11 @@ def wait_for_pid(pids, server_init_timeout, occupy_port_timeout, init_web_ui_tim
           "If you use this \"--skip-database-check\" option, do not make any changes to your cluster topology " \
           "or perform a cluster upgrade until you correct the database consistency issues. See " + \
           db_check_log + "for more details on the consistency issues."
+  elif 'Database consistency check: warning' in open(server_out_file).read():
+    print "\nDB configs consistency check found warnings. See " + db_check_log + " for more details."
   else:
-    print "\nDB consistency check: no errors were found."
+    print "\nDB configs consistency check: no errors and warnings were found."
+
 
   if not server_ui_port_occupied:
     raise FatalException(1, "Server not yet listening on http port " + str(ambari_server_ui_port) +
